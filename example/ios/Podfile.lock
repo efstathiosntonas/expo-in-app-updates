@@ -1409,7 +1409,7 @@ SPEC CHECKSUMS:
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
   ExpoFont: 00756e6c796d8f7ee8d211e29c8b619e75cbf238
-  ExpoInAppUpdates: c6faed115d2ec0b35b6e653180bbe348b2833166
+  ExpoInAppUpdates: 205209cd99beae02627e8021aec4bf8b74e4dfc0
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoModulesCore: 831ece8311a489418746925820bbffdda587d6f4
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af

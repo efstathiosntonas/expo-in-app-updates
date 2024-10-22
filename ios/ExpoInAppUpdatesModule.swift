@@ -1,8 +1,9 @@
 import ExpoModulesCore
+import StoreKit
 
 public class ExpoInAppUpdatesModule: Module {
     public func definition() -> ModuleDefinition {
-        Name("InAppUpdates")
+        Name("ExpoInAppUpdates")
         
         AsyncFunction("checkForUpdate") { (promise: Promise) in
             let appId = Bundle.main.infoDictionary?["AppStoreID"] as? String ?? ""

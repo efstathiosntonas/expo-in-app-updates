@@ -38,7 +38,7 @@ class ExpoInAppUpdatesModule : Module() {
     }
 
     override fun definition() = ModuleDefinition {
-        Name("InAppUpdates")
+        Name("ExpoInAppUpdates")
 
         Constants(
             "FLEXIBLE" to AppUpdateType.FLEXIBLE,
