@@ -2,8 +2,9 @@
 
 Native in-app updates for Android and iOS
 
-![Example](https://developer.android.com/static/images/app-bundle/flexible_flow.png)
-![Example](https://developer.android.com/static/images/app-bundle/immediate_flow.png)
+<a href="https://developer.android.com/guide/playcore/in-app-updates#flexible"><img src="https://developer.android.com/static/images/app-bundle/flexible_flow.png" alt="Example flexible updates" height="400"/></a>
+
+<a href="https://developer.android.com/guide/playcore/in-app-updates#immediate"><img src="https://developer.android.com/static/images/app-bundle/immediate_flow.png" alt="Example immediate updates" height="400"/></a>
 
 ## Installation
 
