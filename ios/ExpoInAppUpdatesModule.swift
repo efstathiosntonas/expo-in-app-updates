@@ -1,44 +1,77 @@
 import ExpoModulesCore
 
 public class ExpoInAppUpdatesModule: Module {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
-  public func definition() -> ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoInAppUpdates')` in JavaScript.
-    Name("ExpoInAppUpdates")
-
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants([
-      "PI": Double.pi
-    ])
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
+    public func definition() -> ModuleDefinition {
+        Name("InAppUpdates")
+        
+        AsyncFunction("checkForUpdate") { (promise: Promise) in
+            let appId = Bundle.main.infoDictionary?["AppStoreID"] as? String ?? ""
+            let appStoreURL = URL(string: "https://itunes.apple.com/lookup?id=\(appId)")!
+            
+            URLSession.shared.dataTask(with: appStoreURL) { (data, response, error) in
+                if let error = error {
+                    promise.reject("ERROR", "Failed to fetch app info: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data else {
+                    promise.reject("ERROR", "No data received from App Store")
+                    return
+                }
+                
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let results = json["results"] as? [[String: Any]],
+                       let appStoreVersion = results.first?["version"] as? String {
+                        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+                        let updateAvailable = appStoreVersion != currentVersion
+                        promise.resolve(["updateAvailable": updateAvailable])
+                    } else {
+                        promise.resolve(["updateAvailable": false])
+                    }
+                } catch {
+                    promise.reject("ERROR", "Failed to parse app info: \(error.localizedDescription)")
+                }
+            }.resume()
+        }
+        
+        AsyncFunction("startUpdate") { (promise: Promise) in
+            let appId = Bundle.main.infoDictionary?["AppStoreID"] as? String ?? ""
+            
+            DispatchQueue.main.async {
+                guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let rootViewController = scene.windows.first?.rootViewController else {
+                    promise.reject("ERROR", "Unable to get root view controller")
+                    return
+                }
+                
+                let storeViewController = SKStoreProductViewController()
+                let parameters = [SKStoreProductParameterITunesItemIdentifier: appId]
+                
+                storeViewController.loadProduct(withParameters: parameters) { (loaded, error) in
+                    if loaded {
+                        DispatchQueue.main.async {
+                            rootViewController.present(storeViewController, animated: true, completion: nil)
+                        }
+                        promise.resolve(true)
+                    } else {
+                        let urlString = "https://apps.apple.com/app/id\(appId)"
+                        if let url = URL(string: urlString) {
+                            DispatchQueue.main.async {
+                                UIApplication.shared.open(url, options: [:]) { success in
+                                    if success {
+                                        promise.resolve(true)
+                                    } else {
+                                        promise.reject("ERROR", "Failed to open App Store URL")
+                                    }
+                                }
+                            }
+                        } else {
+                            promise.reject("ERROR", "Invalid App Store URL")
+                        }
+                    }
+                }
+            }
+        }
     }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of the
-    // view definition: Prop, Events.
-    View(ExpoInAppUpdatesView.self) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { (view: ExpoInAppUpdatesView, prop: String) in
-        print(prop)
-      }
-    }
-  }
 }
