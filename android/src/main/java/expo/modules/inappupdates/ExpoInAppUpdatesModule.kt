@@ -1,47 +1,115 @@
 package expo.modules.inappupdates
 
+import android.net.Uri
+import android.app.Activity
+import android.content.Intent
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.exception.CodedException
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.InstallStateUpdatedListener
 
 class ExpoInAppUpdatesModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
-  override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoInAppUpdates')` in JavaScript.
-    Name("ExpoInAppUpdates")
+  private lateinit var appUpdateManager: AppUpdateManager
+    private val requestCode = 100
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants(
-      "PI" to Math.PI
-    )
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
+    private fun redirectToStore() {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("https://play.google.com/store/apps/details?id=${appContext.reactContext?.packageName}")
+            setPackage("com.android.vending")
+        }
+        appContext.currentActivity?.startActivity(intent)
     }
 
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
+    private val listener = InstallStateUpdatedListener { state ->
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+            // Trigger user action to complete the update
+            appUpdateManager.completeUpdate()
+        } else if (state.installStatus() == InstallStatus.FAILED){
+            redirectToStore()
+        }
     }
 
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(ExpoInAppUpdatesView::class) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { view: ExpoInAppUpdatesView, prop: String ->
-        println(prop)
-      }
+    override fun definition() = ModuleDefinition {
+        Name("InAppUpdates")
+
+        Constants(
+            "FLEXIBLE" to AppUpdateType.FLEXIBLE,
+            "IMMEDIATE" to AppUpdateType.IMMEDIATE
+        )
+
+        OnCreate {
+            appUpdateManager = AppUpdateManagerFactory.create(appContext.reactContext!!)
+            appUpdateManager.registerListener(listener)
+        }
+
+        OnDestroy {
+            appUpdateManager.unregisterListener(listener)
+        }
+
+        AsyncFunction("checkForUpdate") { promise: Promise ->
+            appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+                when {
+                    appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE -> {
+                        promise.resolve(mapOf(
+                            "updateAvailable" to true,
+                            "immediateAllowed" to appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE),
+                            "flexibleAllowed" to appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+                        ))
+                    }
+                    appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
+                        promise.resolve(mapOf(
+                            "updateAvailable" to true,
+                            "updateInProgress" to true
+                        ))
+                    }
+                    else -> {
+                        promise.resolve(mapOf("updateAvailable" to false))
+                    }
+                }
+            }.addOnFailureListener { error ->
+                promise.reject(CodedException("Failed to check for updates: ${error.message}", error))
+            }
+        }
+
+        AsyncFunction("startUpdate") { updateType: Int, promise: Promise ->
+            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+            appUpdateInfoTask.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
+                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(updateType)
+                ) {
+                    appContext.currentActivity?.let { activity ->
+                        val appUpdateOptions = AppUpdateOptions.newBuilder(updateType)
+                            .setAllowAssetPackDeletion(true)
+                            .build()
+
+                        appUpdateManager.startUpdateFlowForResult(appUpdateInfo, activity, appUpdateOptions, requestCode)
+
+                        promise.resolve(true)
+                    } ?: run {
+                        promise.reject(CodedException("Current activity is null"))
+                    }
+                } else {
+                    promise.resolve(false)
+                }
+            }.addOnFailureListener { error ->
+                promise.reject(CodedException("Failed to start update flow: ${error.message}", error))
+            }
+        }
+
+        OnActivityResult { _, activityResult ->
+            if (activityResult.requestCode == requestCode) {
+                if (activityResult.resultCode != Activity.RESULT_OK && activityResult.resultCode != Activity.RESULT_CANCELED) {
+                    redirectToStore()
+                }
+            }
+        }
     }
-  }
 }
