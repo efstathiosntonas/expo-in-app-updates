@@ -4,6 +4,8 @@ Native in-app updates for Android and iOS.
 
 This module uses the Android native [in-app updates](https://developer.android.com/guide/playcore/in-app-updates) library on Android and [iTunes Search API](https://performance-partners.apple.com/search-api) on iOS.
 
+On Android, it will show a native overlay like the screenshots below but on iOS it opens the app store on a modal to update the app. You may want to show an alert or custom UI on iOS. See the [example](#example) at the bottom.
+
 <a href="https://developer.android.com/guide/playcore/in-app-updates#flexible"><img src="https://developer.android.com/static/images/app-bundle/flexible_flow.png" alt="Example flexible updates" height="400"/></a>
 
 <a href="https://developer.android.com/guide/playcore/in-app-updates#immediate"><img src="https://developer.android.com/static/images/app-bundle/immediate_flow.png" alt="Example immediate updates" height="400"/></a>
