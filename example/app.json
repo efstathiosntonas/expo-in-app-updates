@@ -21,9 +21,6 @@
         "backgroundColor": "#ffffff"
       },
       "package": "expo.modules.inappupdates.example"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     }
   }
 }

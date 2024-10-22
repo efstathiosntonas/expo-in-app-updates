@@ -1,26 +1,54 @@
-import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
+import { Platform } from "react-native";
 
-// Import the native module. On web, it will be resolved to ExpoInAppUpdates.web.ts
-// and on native platforms to ExpoInAppUpdates.ts
-import ExpoInAppUpdatesModule from './ExpoInAppUpdatesModule';
-import ExpoInAppUpdatesView from './ExpoInAppUpdatesView';
-import { ChangeEventPayload, ExpoInAppUpdatesViewProps } from './ExpoInAppUpdates.types';
+import ExpoInAppUpdatesModule from "./ExpoInAppUpdatesModule";
 
-// Get the native constant value.
-export const PI = ExpoInAppUpdatesModule.PI;
+/**
+ * App update types of in-app updates for Android.
+ *
+ * @platform android
+ */
+export const AppUpdateType = {
+  FLEXIBLE: ExpoInAppUpdatesModule?.FLEXIBLE,
+  IMMEDIATE: ExpoInAppUpdatesModule?.IMMEDIATE,
+};
 
-export function hello(): string {
-  return ExpoInAppUpdatesModule.hello();
+/**
+ * Checks if an app update is available.
+ *
+ * @return A promise that resolves updateAvailable for Android and iOS, flexibleAllowed and immediateAllowed for Android
+ */
+export async function checkForUpdate() {
+  return ExpoInAppUpdatesModule.checkForUpdate();
 }
 
-export async function setValueAsync(value: string) {
-  return await ExpoInAppUpdatesModule.setValueAsync(value);
+/**
+ * Starts an in-app update.
+ *
+ * @param isImmediate - Whether the update should be a [flexible update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible) or [immediate update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate).
+ *
+ * @return Whether the update was started successfully.
+ */
+export async function startUpdate(isImmediate = false) {
+  if (Platform.OS === "android") {
+    return ExpoInAppUpdatesModule.startUpdate(
+      isImmediate ? AppUpdateType.IMMEDIATE : AppUpdateType.FLEXIBLE
+    );
+  } else {
+    return ExpoInAppUpdatesModule.startUpdate();
+  }
 }
 
-const emitter = new EventEmitter(ExpoInAppUpdatesModule ?? NativeModulesProxy.ExpoInAppUpdates);
-
-export function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription {
-  return emitter.addListener<ChangeEventPayload>('onChange', listener);
+/**
+ * Checks if an app update is available and starts the update process if necessary.
+ *
+ * @param isImmediate - Whether the update should be a [flexible update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible) or [immediate update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate).
+ *
+ * @return Whether an update was started successfully.
+ */
+export async function checkAndStartUpdate(isImmediate = false) {
+  const { updateAvailable, immediateAllowed } = await checkForUpdate();
+  if (updateAvailable) {
+    return startUpdate(isImmediate && immediateAllowed);
+  }
+  return false;
 }
-
-export { ExpoInAppUpdatesView, ExpoInAppUpdatesViewProps, ChangeEventPayload };
