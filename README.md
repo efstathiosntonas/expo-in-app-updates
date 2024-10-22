@@ -12,9 +12,28 @@ Native in-app updates for Android and iOS
 npm install expo-in-app-updates
 ```
 
+For iOS, add your AppStoreID (the id in your app store link, e.g https://apps.apple.com/pl/app/example/id1234567890) in `infoPlist` in your `app.json`
+
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "AppStoreID": "1234567890"
+      }
+    },
+  }
+}
+
+```
+
 > Run `npx pod-install` after installing the npm package for iOS.
 
 > For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
+
+```
+npx expo run:android | run:ios
+```
 
 ## Usages
 
@@ -27,7 +46,8 @@ const useInAppUpdates = () => {
 
     if (Platform.OS === "android") {
       ExpoInAppUpdates.checkAndStartUpdate(
-        // If you want an immediate update that will cover the app with the update overlay, set it to true. More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
+        // If you want an immediate update that will cover the app with the update overlay, set it to true.
+        // More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
         false
       );
     } else {
