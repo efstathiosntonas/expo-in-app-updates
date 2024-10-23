@@ -1,6 +1,6 @@
 # expo-in-app-updates
 
-Native in-app updates for Android and iOS. 
+Native in-app updates for Android and iOS.
 
 This module uses the Android native [in-app updates](https://developer.android.com/guide/playcore/in-app-updates) library on Android and [iTunes Search API](https://performance-partners.apple.com/search-api) on iOS.
 
@@ -25,10 +25,9 @@ For iOS, add your AppStoreID (the id in your app store link, e.g https://apps.ap
       "infoPlist": {
         "AppStoreID": "1234567890"
       }
-    },
+    }
   }
 }
-
 ```
 
 > Run `npx pod-install` after installing the npm package for iOS.
@@ -44,51 +43,51 @@ npx expo run:android | run:ios
 ### Check for updates :
 
 ```ts
-const { 
-  updateAvailable,
-  flexibleAllowed,
-  immediateAllowed
-} = await ExpoInAppUpdates.checkForUpdate()
+const { updateAvailable, flexibleAllowed, immediateAllowed } =
+  await ExpoInAppUpdates.checkForUpdate();
 ```
 
 Checks if an app update is available. Return a promise that resolves `updateAvailable` for Android and iOS, `flexibleAllowed` and `immediateAllowed` for Android.
 
-* `updateAvailable`: If an update is available.
-* `flexibleAllowed`: If able to start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible)
-* `immediateAllowed`: If able to start an [Immediate Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate)
+- `updateAvailable`: If an update is available.
+- `flexibleAllowed`: If able to start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible)
+- `immediateAllowed`: If able to start an [Immediate Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate)
 
 ### Start an in-app update :
 
 ```ts
-const isUpdateStarted = await ExpoInAppUpdates.startUpdate()
+const isUpdateStarted = await ExpoInAppUpdates.startUpdate();
 ```
 
 Starts an in-app update. Return a boolean whether the update was started successfully.
 
 > [!NOTE]
 > If you want an [Immediate Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate) that will cover the app with the update overlay, pass true to this function. By default, it will start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible). More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
+>
 > ```ts
-> const isUpdateStarted = await ExpoInAppUpdates.startUpdate(true)
+> const isUpdateStarted = await ExpoInAppUpdates.startUpdate(true);
 > ```
 
 ### Check and start an in-app update :
 
 ```ts
-const isUpdateStarted = await ExpoInAppUpdates.checkAndStartUpdate()
+const isUpdateStarted = await ExpoInAppUpdates.checkAndStartUpdate();
 ```
 
 Checks if an app update is available and starts the update process if necessary. Return a boolean whether the update was started successfully.
 
 > [!NOTE]
 > If you want an [Immediate Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate) that will cover the app with the update overlay, pass true to this function. By default, it will start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible). More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
+>
 > ```ts
-> const isUpdateStarted = await ExpoInAppUpdates.checkAndStartUpdate(true)
+> const isUpdateStarted = await ExpoInAppUpdates.checkAndStartUpdate(true);
 > ```
 
 > [!TIP]
 > You may want to check for updates and show an alert or custom UI on iOS. On iOS, there is no UI shown to the user when performing an update. It opens the app store on a modal to update the app. See the [example](#example) below.
 
 ### Example
+
 ```tsx
 import * as ExpoInAppUpdates from "expo-in-app-updates";
 
