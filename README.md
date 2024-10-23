@@ -43,8 +43,11 @@ npx expo run:android | run:ios
 ### Check for updates :
 
 ```ts
-const { updateAvailable, flexibleAllowed, immediateAllowed } =
-  await ExpoInAppUpdates.checkForUpdate();
+const { 
+  updateAvailable,
+  flexibleAllowed,
+  immediateAllowed
+} = await ExpoInAppUpdates.checkForUpdate();
 ```
 
 Checks if an app update is available. Return a promise that resolves `updateAvailable` for Android and iOS, `flexibleAllowed` and `immediateAllowed` for Android.
@@ -89,6 +92,9 @@ Checks if an app update is available and starts the update process if necessary.
 ### Example
 
 ```tsx
+import { useEffect } from "react";
+import { Alert, Platform, Text, View } from "react-native";
+
 import * as ExpoInAppUpdates from "expo-in-app-updates";
 
 const useInAppUpdates = () => {
