@@ -30,9 +30,8 @@ For iOS, add your AppStoreID (the id in your app store link, e.g https://apps.ap
 }
 ```
 
-> Run `npx pod-install` after installing the npm package for iOS.
-
 > For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
+> Run `npx pod-install` after installing the npm package for iOS.
 
 ```
 npx expo run:android | run:ios
