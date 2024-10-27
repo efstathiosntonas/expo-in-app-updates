@@ -98,7 +98,7 @@ import * as ExpoInAppUpdates from "expo-in-app-updates";
 
 const useInAppUpdates = () => {
   useEffect(() => {
-    if (__DEV__) return;
+    if (__DEV__ || Platform.OS === "web") return;
 
     if (Platform.OS === "android") {
       ExpoInAppUpdates.checkAndStartUpdate(
