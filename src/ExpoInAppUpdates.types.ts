@@ -17,7 +17,7 @@ export type ExpoInAppUpdatesModuleType = {
     /** If an update is in progress */
     updateInProgress?: boolean;
 
-    /** Latest App Store / Play Store version. On Android, this is the `versionCode` that you defined in `app.json`. */
+    /** The latest app version published in the App Store / Play Store. On Android, this is the `versionCode` that you defined in `app.json`. */
     storeVersion: string;
 
     /**

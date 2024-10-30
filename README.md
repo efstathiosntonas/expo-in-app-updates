@@ -54,6 +54,7 @@ Checks if an app update is available. Return a promise that resolves `updateAvai
 - `updateAvailable`: If an update is available.
 - `flexibleAllowed`: If able to start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible)
 - `immediateAllowed`: If able to start an [Immediate Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate)
+- `storeVersion`: The latest app version published in the App Store / Play Store. On Android, this is the `versionCode` that you defined in `app.json`.
 
 ### Start an in-app update :
 
