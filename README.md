@@ -111,9 +111,7 @@ const useInAppUpdates = () => {
          */
         const storedAppVersion = await AsyncStorage.getItem("latestVersion")
         
-        if(storedAppVersion === storeVersion) {
-            return
-        }
+        if(storedAppVersion === storeVersion) return;
         
         if(Platform.OS === 'android') {
             ExpoInAppUpdates.startUpdate(
