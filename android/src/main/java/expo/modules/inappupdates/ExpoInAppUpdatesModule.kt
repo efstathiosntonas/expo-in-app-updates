@@ -72,7 +72,10 @@ class ExpoInAppUpdatesModule : Module() {
                         ))
                     }
                     else -> {
-                        promise.resolve(mapOf("updateAvailable" to false))
+                        promise.resolve(mapOf(
+                            "updateAvailable" to true,
+                            "updateInProgress" to true
+                        ))
                     }
                 }
             }.addOnFailureListener { error ->
