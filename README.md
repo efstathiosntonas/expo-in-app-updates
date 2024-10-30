@@ -112,7 +112,7 @@ const useInAppUpdates = () => {
         
         if(storedAppVersion === storeVersion) {
             return
-        }  
+        }
         
         if(Platform.OS === 'android') {
             ExpoInAppUpdates.startUpdate(
@@ -120,7 +120,7 @@ const useInAppUpdates = () => {
                 // More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
                 immediateAllowed // or false
             )
-            await AsyncStorage.removeItem("latestVersion")
+            await AsyncStorage.setItem("latestVersion", storeVersion)
             return;
         }
 
@@ -133,7 +133,7 @@ const useInAppUpdates = () => {
               isPreferred: true,
               async onPress() {
                 await ExpoInAppUpdates.startUpdate();
-                await AsyncStorage.removeItem("latestVersion")
+                await AsyncStorage.setItem("latestVersion", storeVersion)
               },
             },
             { text: "Cancel" },
