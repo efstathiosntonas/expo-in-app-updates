@@ -36,6 +36,7 @@ const useInAppUpdates = () => {
 };
 
 export default function App() {
+  // Use this hook in your root app or root layout component
   useInAppUpdates();
 
   return (

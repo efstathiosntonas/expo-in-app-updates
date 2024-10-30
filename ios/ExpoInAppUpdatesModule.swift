@@ -26,7 +26,7 @@ public class ExpoInAppUpdatesModule: Module {
                        let appStoreVersion = results.first?["version"] as? String {
                         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
                         let updateAvailable = appStoreVersion != currentVersion
-                        promise.resolve(["updateAvailable": updateAvailable])
+                        promise.resolve(["updateAvailable": updateAvailable, "storeVersion": appStoreVersion])
                     } else {
                         promise.resolve(["updateAvailable": false])
                     }

@@ -90,6 +90,8 @@ Checks if an app update is available and starts the update process if necessary.
 
 ### Example
 
+This example will ask the user for update the app if update available on every app startup until the user update the app.
+
 ```tsx
 import { useEffect } from "react";
 import { Alert, Platform, Text, View } from "react-native";
@@ -130,6 +132,7 @@ const useInAppUpdates = () => {
 };
 
 export default function App() {
+  // Use this hook in your root app or root layout component
   useInAppUpdates();
 
   return (
@@ -138,4 +141,62 @@ export default function App() {
     </View>
   );
 }
+```
+
+---
+
+This example will ask the user for update the app if update available and if user don't update or cancel the update, then the user will not be asked for update again until a new version published again.
+
+```tsx
+import { useEffect } from "react";
+import { Alert, Platform } from "react-native";
+import AsyncStorage from "expo-sqlite/async-storage";
+
+import * as ExpoInAppUpdates from "expo-in-app-updates";
+
+const useInAppUpdates = () => {
+  useEffect(() => {
+    if (__DEV__ || Platform.OS === "web") return;
+
+    ExpoInAppUpdates.checkForUpdate().then(
+      async ({ updateAvailable, storeVersion }) => {
+        if (!updateAvailable) return;
+
+        // Get the last saved storeVersion from your local-storage (AsyncStorage/MMKV)
+        const savedStoreVersion = await AsyncStorage.getItem("savedStoreVersion");
+        // Check and return from here to prevent asking for updates again for the same storeVersion.
+        if (savedStoreVersion === storeVersion) return;
+
+        if (Platform.OS === "android") {
+          await ExpoInAppUpdates.startUpdate();
+          // Saving the storeVersion after checked for updates, so we can check and ignore asking for updates again for the same storeVersion
+          await AsyncStorage.setItem("savedStoreVersion", storeVersion);
+          return;
+        }
+
+        Alert.alert(
+          "Update available",
+          "A new version of the app is available with many improvements and bug fixes. Would you like to update now?",
+          [
+            {
+              text: "Update",
+              isPreferred: true,
+              async onPress() {
+                await ExpoInAppUpdates.startUpdate();
+                await AsyncStorage.setItem("savedStoreVersion", storeVersion);
+              },
+            },
+            {
+              text: "Cancel",
+              async onPress() {
+                // Saving the storeVersion after checked for updates, so we can check and ignore asking for updates again for the same storeVersion
+                await AsyncStorage.setItem("savedStoreVersion", storeVersion);
+              },
+            },
+          ]
+        );
+      }
+    );
+  }, []);
+};
 ```

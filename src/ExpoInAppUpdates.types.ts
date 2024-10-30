@@ -14,8 +14,11 @@ export type ExpoInAppUpdatesModuleType = {
     /** If an update is available */
     updateAvailable: boolean;
 
-    /** If an update is available */
+    /** If an update is in progress */
     updateInProgress?: boolean;
+
+    /** Latest App Store / Play Store version. On Android, this is the `versionCode` that you defined in `app.json`. */
+    storeVersion: string;
 
     /**
      * If able to start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible)

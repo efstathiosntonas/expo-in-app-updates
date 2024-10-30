@@ -15,7 +15,7 @@ export const AppUpdateType = {
 /**
  * Checks if an app update is available.
  *
- * @return A promise that resolves updateAvailable for Android and iOS, flexibleAllowed and immediateAllowed for Android
+ * @return A promise that resolves `updateAvailable` and `storeVersion` for Android and iOS, `flexibleAllowed` and `immediateAllowed` for Android
  */
 export async function checkForUpdate() {
   return ExpoInAppUpdatesModule.checkForUpdate();
