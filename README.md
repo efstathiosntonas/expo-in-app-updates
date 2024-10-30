@@ -116,8 +116,9 @@ const useInAppUpdates = () => {
         
         if(Platform.OS === 'android') {
             ExpoInAppUpdates.startUpdate(
-                // If you want an immediate update that will cover the app with the update overlay, set it to true.
-                // More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
+                /* If you want an immediate update that will cover the app with the update overlay, set it to true.
+                 * More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
+                 */
                 immediateAllowed // or false
             )
             await AsyncStorage.setItem("latestVersion", storeVersion)
