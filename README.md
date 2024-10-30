@@ -45,7 +45,8 @@ npx expo run:android | run:ios
 const { 
   updateAvailable,
   flexibleAllowed,
-  immediateAllowed
+  immediateAllowed,
+  storeVersion
 } = await ExpoInAppUpdates.checkForUpdate();
 ```
 
