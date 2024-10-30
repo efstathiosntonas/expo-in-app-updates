@@ -105,7 +105,7 @@ const useInAppUpdates = () => {
       ExpoInAppUpdates.checkForUpdate().then(async ({ updateAvailable, storeVersion, immediateAllowed }) => {
         if (!updateAvailable) return;
         
-        /* use storeVersion to check against AsyncStorage/MMKV and prevent showing the alert
+        /* optional: use storeVersion to check against AsyncStorage/MMKV and prevent showing the alert
          * on every app cold boot for the same version 
          */
         const storedAppVersion = await AsyncStorage.getItem("latestVersion")
