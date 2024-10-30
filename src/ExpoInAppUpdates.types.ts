@@ -14,6 +14,9 @@ export type ExpoInAppUpdatesModuleType = {
     /** If an update is available */
     updateAvailable: boolean;
 
+    /** Latest App Store / Play Store version */
+    storeVersion: string;
+
     /** If an update is available */
     updateInProgress?: boolean;
 

@@ -54,6 +54,7 @@ Checks if an app update is available. Return a promise that resolves `updateAvai
 - `updateAvailable`: If an update is available.
 - `flexibleAllowed`: If able to start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible)
 - `immediateAllowed`: If able to start an [Immediate Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#immediate)
+- `storeVersion`: Returns the latest version from the App/Play Store
 
 ### Start an in-app update :
 
@@ -93,22 +94,35 @@ Checks if an app update is available and starts the update process if necessary.
 ```tsx
 import { useEffect } from "react";
 import { Alert, Platform, Text, View } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as ExpoInAppUpdates from "expo-in-app-updates";
 
 const useInAppUpdates = () => {
   useEffect(() => {
     if (__DEV__ || Platform.OS === "web") return;
-
-    if (Platform.OS === "android") {
-      ExpoInAppUpdates.checkAndStartUpdate(
-        // If you want an immediate update that will cover the app with the update overlay, set it to true.
-        // More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
-        false
-      );
-    } else {
-      ExpoInAppUpdates.checkForUpdate().then(({ updateAvailable }) => {
+    
+      ExpoInAppUpdates.checkForUpdate().then(async ({ updateAvailable, storeVersion, immediateAllowed }) => {
         if (!updateAvailable) return;
+        
+        /* use storeVersion to check against AsyncStorage/MMKV and prevent showing the alert
+         * on every app cold boot for the same version 
+         */
+        const storedAppVersion = await AsyncStorage.getItem("latestVersion")
+        
+        if(storedAppVersion === storeVersion) {
+            return
+        }  
+        
+        if(Platform.OS === 'android') {
+            ExpoInAppUpdates.startUpdate(
+                // If you want an immediate update that will cover the app with the update overlay, set it to true.
+                // More details : https://developer.android.com/guide/playcore/in-app-updates#update-flows
+                immediateAllowed // or false
+            )
+            await AsyncStorage.removeItem("latestVersion")
+            return;
+        }
 
         Alert.alert(
           "Update available",
@@ -119,13 +133,13 @@ const useInAppUpdates = () => {
               isPreferred: true,
               async onPress() {
                 await ExpoInAppUpdates.startUpdate();
+                await AsyncStorage.removeItem("latestVersion")
               },
             },
             { text: "Cancel" },
           ]
         );
       });
-    }
   }, []);
 };
 

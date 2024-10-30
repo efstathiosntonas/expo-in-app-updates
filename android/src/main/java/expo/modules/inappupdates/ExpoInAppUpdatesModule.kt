@@ -61,7 +61,8 @@ class ExpoInAppUpdatesModule : Module() {
                         promise.resolve(mapOf(
                             "updateAvailable" to true,
                             "immediateAllowed" to appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE),
-                            "flexibleAllowed" to appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+                            "flexibleAllowed" to appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE),
+                            "storeVersion" to appUpdateInfo.availableVersionCode()
                         ))
                     }
                     appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
