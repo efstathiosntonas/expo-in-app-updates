@@ -136,7 +136,12 @@ const useInAppUpdates = () => {
                 await AsyncStorage.setItem("latestVersion", storeVersion)
               },
             },
-            { text: "Cancel" },
+            { 
+             text: "Cancel",
+             async onPress() {
+                await AsyncStorage.setItem("latestVersion", storeVersion)
+              } 
+            },
           ]
         );
       });
