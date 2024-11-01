@@ -202,4 +202,6 @@ const useInAppUpdates = () => {
 };
 ```
 
-[**Test in-app updates**](https://developer.android.com/guide/playcore/in-app-updates/test)
+---
+
+Use [internal app sharing](https://support.google.com/googleplay/android-developer/answer/9844679) of Play Console to [**Test in-app updates**](https://developer.android.com/guide/playcore/in-app-updates/test)
