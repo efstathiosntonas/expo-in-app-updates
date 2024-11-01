@@ -10,7 +10,8 @@ public class ExpoInAppUpdatesModule: Module {
             let timestamp = Date().timeIntervalSince1970
             let appStoreURL = URL(string: "https://itunes.apple.com/lookup?id=\(appId)&_=\(timestamp)")!
 
-            URLSession.shared.dataTask(with: appStoreURL) { (data, response, error) in
+            let session = URLSession(configuration: .ephemeral)
+            session.dataTask(with: appStoreURL) { (data, response, error) in
                 if let error = error {
                     promise.reject("ERROR", "Failed to fetch app info: \(error.localizedDescription)")
                     return
