@@ -49,7 +49,7 @@ const {
 } = await ExpoInAppUpdates.checkForUpdate();
 ```
 
-Checks if an app update is available. Return a promise that resolves `updateAvailable` for Android and iOS, `flexibleAllowed` and `immediateAllowed` for Android.
+Checks if an app update is available. Return a promise that resolves `updateAvailable` and `storeVersion` for Android and iOS, `flexibleAllowed` and `immediateAllowed` for Android.
 
 - `updateAvailable`: If an update is available.
 - `flexibleAllowed`: If able to start a [Flexible Update](https://developer.android.com/guide/playcore/in-app-updates/kotlin-java#flexible)
@@ -201,3 +201,5 @@ const useInAppUpdates = () => {
   }, []);
 };
 ```
+
+[**Test in-app updates**](https://developer.android.com/guide/playcore/in-app-updates/test)
