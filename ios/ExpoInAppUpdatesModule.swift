@@ -7,8 +7,7 @@ public class ExpoInAppUpdatesModule: Module {
 
         AsyncFunction("checkForUpdate") { (promise: Promise) in
             let appId = Bundle.main.infoDictionary?["AppStoreID"] as? String ?? ""
-            let timestamp = Date().timeIntervalSince1970
-            let appStoreURL = URL(string: "https://itunes.apple.com/lookup?id=\(appId)&_=\(timestamp)")!
+            let appStoreURL = URL(string: "https://itunes.apple.com/lookup?id=\(appId)")!
 
             let session = URLSession(configuration: .ephemeral)
             session.dataTask(with: appStoreURL) { (data, response, error) in
